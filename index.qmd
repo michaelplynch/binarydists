@@ -22,6 +22,4 @@ Content!
 
 Emojis are supported :smile:
 
-````{r}
-1+1
-````
+
