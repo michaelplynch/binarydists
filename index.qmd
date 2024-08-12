@@ -9,9 +9,6 @@ format:
         code-line-numbers: false
         preview-links: auto
 author: "David Wilby"
-date: 04/08/2024 #Date in US format... MM/DD/YYYY
-date-format: "ddd Do MMMM YYYY"
-footer: "these slides: [davidwilby.dev/quarto-presentation-template](https://davidwilby.dev/quarto-presentation-template) - {{< fa brands github >}} [improve this talk!](https://github.com/davidwilby/quarto-presentation-template)"
 from: markdown+emoji
 width: 850
 height: 700
@@ -26,5 +23,5 @@ Content!
 Emojis are supported :smile:
 
 ````{r}
-
+1+1
 ````
