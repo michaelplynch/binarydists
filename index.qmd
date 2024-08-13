@@ -1,7 +1,7 @@
 ---
 title: "Binary distance calculations with missing data with Quarto"
 format:
-    revealjs:
+    live-revealjs:
         slide-number: true
         show-slide-number: speaker
         chalkboard: true
@@ -9,9 +9,11 @@ format:
         preview-links: auto
 author: "Michael Lynch"
 from: markdown+emoji
-filters:
-  - webr
+engine: knitr
 ---
+
+{{< include ./_extensions/r-wasm/live/_knitr.qmd >}}
+
 
 ## First slide! {background-image="assets/images/UL_slides_template.png"}
 
@@ -24,7 +26,7 @@ filters:
 
 ## Vectorisation {background-image="assets/images/cat.jpeg"}
 
-````{webr-r echo=TRUE}
+````{webr}
  
 x=1:5
 
