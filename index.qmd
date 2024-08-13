@@ -1,29 +1,40 @@
 ---
-title: "Template for Quarto Presentations with GitHub actions"
+title: "Binary distance calculations with missing data with Quarto"
 format:
     revealjs:
-        theme: [serif] # More themes at https://quarto.org/docs/presentations/revealjs/themes.html
         slide-number: true
         show-slide-number: speaker
         chalkboard: true
         code-line-numbers: false
         preview-links: auto
-author: "David Wilby"
+author: "Michael Lynch"
 from: markdown+emoji
-width: 850
-height: 700
+filters:
+  - webr
 ---
 
 ## First slide! {background-image="assets/images/UL_slides_template.png"}
 
-## Second slide! {background-image="assets/images/cat.jpeg"}
-
-Content!
-
-Emojis are supported :smile:
-
-````{r}
- 1+1
+3 main points 
+- WebR
+- Quarto reproducible presentations
+- benchmarking in R
+- some of my work on distance metrics for binary data
 
 
+## Vectorisation {background-image="assets/images/cat.jpeg"}
+
+````{webr-r echo=TRUE}
+ 
+x=1:5
+
+y1<-x*2
+
+y2<-c()
+for (i in seq_along(x)) {
+  y2[i]<-x[i]*2
+}
+
+y1
+y2
 ````
