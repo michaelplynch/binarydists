@@ -25,7 +25,6 @@ jobs:
         uses: quarto-dev/quarto-actions/setup@v2
       - run: |
           mkdir build
-          printf "Y\nY\nY" | quarto add r-wasm/quarto-live
           quarto render index.qmd --output-dir build
 
       - name: Deploy 🚀
