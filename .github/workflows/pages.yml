@@ -21,6 +21,10 @@ jobs:
           packages:
             any::knitr
             any::rmarkdown
+            any::rbenchmark
+            any::microbenchmark
+            any::ggpubr
+            any::Matrix
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
       - run: |

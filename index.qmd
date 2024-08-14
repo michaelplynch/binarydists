@@ -1,12 +1,14 @@
 ---
-title: "Binary distance calculations with missing data with Quarto"
+title: "Binary distance calculations for missing data with Quarto"
 format:
     live-revealjs:
         slide-number: true
         show-slide-number: speaker
         chalkboard: true
-        code-line-numbers: false
+        code-line-numbers: true
         preview-links: auto
+        width: 1350
+        height: 700
 author: "Michael Lynch"
 from: markdown+emoji
 engine: knitr
@@ -15,28 +17,146 @@ engine: knitr
 {{< include ./_extensions/r-wasm/live/_knitr.qmd >}}
 
 
-## First slide! {background-image="assets/images/UL_slides_template.png"}
+## {background-image="assets/images/UL_slides_template.png"}
 
-3 main points 
-- WebR
-- Quarto reproducible presentations
-- benchmarking in R
-- some of my work on distance metrics for binary data
+Today's lab meeting:
+
+::: {.nonincremental}
+- Demonstrate and provide template for reproducible & interactive presentations with Quarto
+- Introduce algorithm complexity and vectorisation
+- Matrix multiplication for binary and missing data
+:::
+
+# Quarto basics
 
 
-## Vectorisation {background-image="assets/images/cat.jpeg"}
+## Quarto presentations
+
+Rendered similar to .rmd/.qmd docs/websites/books etc.
+
+Can be hosted on Github pages
+
+Multiple rendering formats (Powerpoint, beamer, revealjs)
+
+## Plotting code and results
+
+````{r fig.width=6,fig.height=3,echo=TRUE}
+
+#| output-location: fragment
+x<-1:5
+print(x+1)
+plot(x)
+
+````
+
+## Bash 
+
+For non-interactive code, you can use R, Python, bash etc. as you would use in a regular rmarkdown or quarto doc.
+
+````{bash echo=TRUE}
+
+ls -alh
+head index.qmd
+````
+## Interactive code
 
 ````{webr}
- 
-x=1:5
+#! echo: true
+#| output-location: column
+# test some of you own code here :) 
 
-y1<-x*2
+cat('You can write some of your own code, and reset if needed.\nOther functionality can be used for creating grading for teaching.')
 
-y2<-c()
-for (i in seq_along(x)) {
-  y2[i]<-x[i]*2
-}
-
-y1
-y2
 ````
+
+# Algorithm complexity, benchmarking and vectorisation
+
+## Complexity
+
+:::: {.columns}
+
+::: {.column width="50%"}
+- Mainly concerned with how an algorithm scales in terms of runtime or memory (among other things) as the input size increases.
+
+- Uses 'Big O' notation where n is the size of the input e.g. O(n), O(n^2)
+
+- Big O notation doesn't capture the actual time/memory usage, just it's relationship with the size of input data
+:::
+
+::: {.column width="50%"}
+
+````{r fig.height=6,fig.width=6}
+
+n<-1:10
+df<-data.frame(n=n,nsqrd=n^2,nexp=2^n,nlogn=n*log(n))
+library(ggpubr)
+ggline(df,x='n',y=c('nexp','nsqrd','nlogn'),merge = TRUE) + ggtitle('Common scaling for different 1000-100,000')
+
+````
+:::
+
+::::
+
+
+## Benchmarking {.scrollable}
+
+````{r echo=TRUE}
+
+print(Sys.time())
+
+system.time(Sys.sleep(2))
+
+tictoc::tic()
+Sys.sleep(2)
+res<-tictoc::toc()
+res
+
+microbenchmark::microbenchmark('wait1'={Sys.sleep(2)},
+                               'wait2'={Sys.sleep(4)},
+                               times=2)
+````
+
+## Vectorisation
+
+So, we now have introduced some concepts for understanding and measuring the efficiency of our code. Now let's look at a simple application of vectorisation.
+
+Loops get a bad rep in R for a couple of reasons.
+
+````{r}
+
+n=100
+x=1:n
+y=x^2
+
+microbenchmark::microbenchmark('vec'={y=x^2},'loop'={y=c();for(i in seq_along(x)){y[i]<-x[i]^2};y},times = 1000,unit = 's')
+
+rbenchmark::benchmark('vec'={y=x^2},'loop'={y=c();for(i in seq_along(x)){y[i]<-x[i]^2};y},replications  = 1000)
+````
+
+## lets take a look at scaling
+
+````{r}
+library(rbenchmark)
+library(microbenchmark)
+ns<-seq(500,10000,500)
+tot<-c()
+for (i in seq_along(ns)) {
+  n<-ns[i]
+  mb<-microbenchmark::microbenchmark('vec'={y=x^2},'loop'={y=c();for(i in seq_along(x)){y[i]<-x[i]^2}},times = 100,unit = 's',setup = {x=1:n})
+  print(i)
+  mn<-summary(mb)[,'mean']
+  tot<-rbind(tot,mn)
+}
+plot(tot[,1])
+plot(tot[,2])
+````
+# Adapting binary distance measures for missing data
+
+# Take-home messages
+
+## Quarto + presentations
+
+
+
+## Development
+
