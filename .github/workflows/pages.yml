@@ -26,6 +26,7 @@ jobs:
             any::ggpubr
             any::Matrix
             any::tictoc
+            any::ComplexHeatmap
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
       - run: |

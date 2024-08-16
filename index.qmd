@@ -16,19 +16,17 @@ engine: knitr
 
 {{< include ./_extensions/r-wasm/live/_knitr.qmd >}}
 
-
-## {background-image="assets/images/UL_slides_template.png"}
+##  {background-image="assets/images/UL_slides_template.png"}
 
 Today's lab meeting:
 
-::: {.nonincremental}
-- Demonstrate and provide template for reproducible & interactive presentations with Quarto
-- Introduce algorithm complexity and vectorisation
-- Matrix multiplication for binary and missing data
+::: nonincremental
+-   Demonstrate and provide template for reproducible & interactive presentations with Quarto
+-   Introduce algorithm complexity and vectorisation
+-   Matrix multiplication for binary and missing data
 :::
 
 # Quarto basics
-
 
 ## Quarto presentations
 
@@ -40,67 +38,64 @@ Multiple rendering formats (Powerpoint, beamer, revealjs)
 
 ## Plotting code and results
 
-````{r fig.width=6,fig.height=3,echo=TRUE}
+```{r fig.width=6,fig.height=3,echo=TRUE}
 
 #| output-location: fragment
 x<-1:5
 print(x+1)
 plot(x)
 
-````
+```
 
-## Bash 
+## Bash
 
 For non-interactive code, you can use R, Python, bash etc. as you would use in a regular rmarkdown or quarto doc.
 
-````{bash echo=TRUE}
+```{bash echo=TRUE}
 
 ls -alh
 head index.qmd
-````
+```
+
 ## Interactive code
 
-````{webr}
+```{webr}
 #! echo: true
 #| output-location: column
 # test some of you own code here :) 
 
 cat('You can write some of your own code, and reset if needed.\nOther functionality can be used for creating grading for teaching.')
 
-````
+```
 
 # Algorithm complexity, benchmarking and vectorisation
 
 ## Complexity
 
-:::: {.columns}
-
+::: columns
 ::: {.column width="50%"}
-- Mainly concerned with how an algorithm scales in terms of runtime or memory (among other things) as the input size increases.
+-   Mainly concerned with how an algorithm scales in terms of runtime or memory (among other things) as the input size increases.
 
-- Uses 'Big O' notation where n is the size of the input e.g. O(n), O(n^2)
+-   Uses 'Big O' notation where n is the size of the input e.g. O(n), O(n\^2)
 
-- Big O notation doesn't capture the actual time/memory usage, just it's relationship with the size of input data
+-   Big O notation doesn't capture the actual time/memory usage, just it's relationship with the size of input data
 :::
 
 ::: {.column width="50%"}
-
-````{r fig.height=6,fig.width=6}
+```{r fig.height=6,fig.width=6}
 
 n<-1:10
 df<-data.frame(n=n,nsqrd=n^2,nexp=2^n,nlogn=n*log(n))
 library(ggpubr)
 ggline(df,x='n',y=c('nexp','nsqrd','nlogn'),merge = TRUE) + ggtitle('Common scaling for different 1000-100,000')
 
-````
+```
 :::
-
-::::
-
+:::
 
 ## Benchmarking {.scrollable}
 
-````{r echo=TRUE}
+```{r echo=TRUE}
 
 print(Sys.time())
 
@@ -114,7 +109,7 @@ res
 microbenchmark::microbenchmark('wait1'={Sys.sleep(2)},
                                'wait2'={Sys.sleep(4)},
                                times=2)
-````
+```
 
 ## Vectorisation
 
@@ -122,7 +117,7 @@ So, we now have introduced some concepts for understanding and measuring the eff
 
 Loops get a bad rep in R for a couple of reasons.
 
-````{r}
+```{r}
 
 n=100
 x=1:n
@@ -131,11 +126,11 @@ y=x^2
 microbenchmark::microbenchmark('vec'={y=x^2},'loop'={y=c();for(i in seq_along(x)){y[i]<-x[i]^2};y},times = 1000,unit = 's')
 
 rbenchmark::benchmark('vec'={y=x^2},'loop'={y=c();for(i in seq_along(x)){y[i]<-x[i]^2};y},replications  = 1000)
-````
+```
 
 ## lets take a look at scaling
 
-````{r}
+```{r}
 library(rbenchmark)
 library(microbenchmark)
 ns<-seq(500,10000,500)
@@ -149,14 +144,60 @@ for (i in seq_along(ns)) {
 }
 plot(tot[,1])
 plot(tot[,2])
-````
+```
+
 # Adapting binary distance measures for missing data
+
+-   Binary data is represented as either 0 or 1 and has many applications
+
+-   We will try to leverage useful properties of binary data to classify SNPs
+
+```{r}
+
+vartrix_snps_sim<-matrix(sample(c(0,1,2,3),40,replace=TRUE),ncol=4)
+head(vartrix_snps_sim)
+
+library(ComplexHeatmap)
+Heatmap(vartrix_snps_sim,cluster_rows=FALSE,cluster_columns=FALSE)
+```
+
+-   Numerical output buttttt not really. No real reason 0 should be considreed closer to 1 than 3. Just a way to code it.
+
+## Step 1: Binarise the matrix
+
+2&3 can be considered merged. So we're not down to 'trinary' data. We can also (sort of ) merge 0,1 i.e. the SNP isn't in the data (0 becuase of no read, 1 SNP is in ref not alt)
+
+```{r}
+
+
+
+```
+
+```{r}
+
+
+
+```
+
+## Matrix multiplication
+
+|   | 1 | 0 |
+|---|---|---|
+| 1 | a | b |
+| 0 | c | d |
+
+j=a/(a+b+c)
+
+a= mat x t(mat)
+b= (1-mat) x t(mat)
+c= mat x t(1-mat)
+
+But this set up neglects missing data.
+
+We extend this by multiplying each side of the equation (element wise) by an additional matrix such that 0=no read, 1= SNP in alt, ref, or both
 
 # Take-home messages
 
 ## Quarto + presentations
 
-
-
 ## Development
-
