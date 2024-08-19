@@ -42,6 +42,8 @@ More info [here](https://quarto.org/docs/presentations/revealjs/#footer-logo)
 
 ## Code and output can be rendered similar to .Rmd/.Qmd docs
 
+- Any language compatible was code chunks in RStudio can be used
+
 R: 
 
 ```{r echo=TRUE}
@@ -64,9 +66,12 @@ And some good ol' bash because why not?
 
 echo " Hello World "
 pwd
+whoami 
 ````
 
 ## Line highlighting draw attention to specific parts of code. (sort of)
+
+IMO opinion this aspect still lacks finesse (or else I just haven't figured it out yet)
 
 ````{r}
 #| echo: true
@@ -80,10 +85,29 @@ class(x)
 class(y)
 ````
 
-## We can also include interactive code using quarto-live
+## Other formatting options look a bit messy too?
+
+````{r}
+#| echo: true
+#| output-location: column
+#| code-line-numbers: "|1|2|3|4"
+
+x<-1:5
+y=sqrt(x^2)
+x==y
+identical(x,y)
+class(x)
+class(y)
+````
+
+Maybe there's a better way to use one chunk per output instead...
+
+## We can also include interactive code using quarto-live {.scrollable}
+
+Runs in the browser through [WebAssembly](https://webassembly.org/) and [Quarto-live](https://r-wasm.github.io/quarto-live/)
 
 ```{webr}
-#! echo: true
+#| echo: true
 #| output-location: column
 # test some of you own code here :) 
 
@@ -127,58 +151,64 @@ ggline(df,x='n',y=c('nexp','nsqrd','nlogn'),merge = TRUE) + ggtitle('Common scal
 
 ## Benchmarking {.scrollable}
 
-```{r echo=TRUE}
+```{webr}
 
-print(Sys.time())
+#print(Sys.time())
+#system.time(Sys.sleep(2))
 
-system.time(Sys.sleep(2))
+#tictoc::tic()
+#Sys.sleep(2)
+#res<-tictoc::toc()
+#res
 
-tictoc::tic()
-Sys.sleep(2)
-res<-tictoc::toc()
-res
-
-microbenchmark::microbenchmark('wait1'={Sys.sleep(2)},
-                               'wait2'={Sys.sleep(4)},
-                               times=2)
+#microbenchmark::microbenchmark('wait1'={Sys.sleep(0.1)},
+#                               'wait2'={Sys.sleep(0.1)},
+#                               times=10)
 ```
 
-## Vectorisation
+## Vectorisation {.scrollable}
 
 So, we now have introduced some concepts for understanding and measuring the efficiency of our code. Now let's look at a simple application of vectorisation.
 
 Loops get a bad rep in R for a couple of reasons.
 
 ```{r}
-
+#| echo: true
+#| 
 n=100
 x=1:n
-y=x^2
 
 microbenchmark::microbenchmark('vec'={y=x^2},'loop'={y=c();for(i in seq_along(x)){y[i]<-x[i]^2};y},times = 1000,unit = 's')
 
 rbenchmark::benchmark('vec'={y=x^2},'loop'={y=c();for(i in seq_along(x)){y[i]<-x[i]^2};y},replications  = 1000)
 ```
 
-## lets take a look at scaling
+## Lets take a look at scaling {.scrollable}
 
 ```{r}
 library(rbenchmark)
 library(microbenchmark)
-ns<-seq(500,10000,500)
+ns<-seq(2000,20000,2000)
 tot<-c()
 for (i in seq_along(ns)) {
   n<-ns[i]
   mb<-microbenchmark::microbenchmark('vec'={y=x^2},'loop'={y=c();for(i in seq_along(x)){y[i]<-x[i]^2}},times = 100,unit = 's',setup = {x=1:n})
-  print(i)
-  mn<-summary(mb)[,'mean']
+  #print(i)
+  mn<-summary(mb)[,'median']
   tot<-rbind(tot,mn)
 }
-plot(tot[,1])
-plot(tot[,2])
+
+df<-data.frame(n=ns,vec=tot[,1],loop=tot[,2])
+#head(df)
+library(ggpubr)
+library(gridExtra)
+grid.arrange(ggline(df,x='n',y=c('vec')),ggline(df,x='n',y=c('loop')),ncol=2)
 ```
 
 # Adapting binary distance measures for missing data
+
+
+## Intro to binary data {.scrollable}
 
 -   Binary data is represented as either 0 or 1 and has many applications
 

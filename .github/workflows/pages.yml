@@ -24,6 +24,7 @@ jobs:
             any::rbenchmark
             any::microbenchmark
             any::ggpubr
+            any::gridExtra
             any::Matrix
             any::tictoc
             any::ComplexHeatmap
