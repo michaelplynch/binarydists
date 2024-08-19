@@ -9,6 +9,8 @@ format:
         preview-links: auto
         width: 1350
         height: 700
+        logo: assets/images/UL_logo.jpg
+        footer: "[Source code](https://github.com/michaelplynch/binarydists)"
 author: "Michael Lynch"
 from: markdown+emoji
 engine: knitr
@@ -32,32 +34,53 @@ Today's lab meeting:
 
 Rendered similar to .rmd/.qmd docs/websites/books etc.
 
-Can be hosted on Github pages
-
 Multiple rendering formats (Powerpoint, beamer, revealjs)
 
-## Plotting code and results
+Can be hosted on Github pages (see source code)
 
-```{r fig.width=6,fig.height=3,echo=TRUE}
+More info [here](https://quarto.org/docs/presentations/revealjs/#footer-logo)
 
-#| output-location: fragment
+## Code and output can be rendered similar to .Rmd/.Qmd docs
+
+R: 
+
+```{r echo=TRUE}
+
+print("here's some random r code")
+
+```
+
+Python:
+
+```{python echo=TRUE}
+
+print('Hello, world!')
+
+```
+
+And some good ol' bash because why not?
+
+````{bash echo=TRUE}
+
+echo " Hello World "
+pwd
+````
+
+## Line highlighting draw attention to specific parts of code. (sort of)
+
+````{r}
+#| echo: true
+#| code-line-numbers: "|1|2|3|4"
+
 x<-1:5
-print(x+1)
-plot(x)
+y=sqrt(x^2)
+x==y
+identical(x,y)
+class(x)
+class(y)
+````
 
-```
-
-## Bash
-
-For non-interactive code, you can use R, Python, bash etc. as you would use in a regular rmarkdown or quarto doc.
-
-```{bash echo=TRUE}
-
-ls -alh
-head index.qmd
-```
-
-## Interactive code
+## We can also include interactive code using quarto-live
 
 ```{webr}
 #! echo: true
@@ -66,6 +89,15 @@ head index.qmd
 
 cat('You can write some of your own code, and reset if needed.\nOther functionality can be used for creating grading for teaching.')
 
+cat('Quarto-live uses webR for interactive R')
+```
+
+
+```{pyodide}
+for x in range(3):
+  print(x ** 2)
+
+print('Quarto-live uses pyodide for interactive python')
 ```
 
 # Algorithm complexity, benchmarking and vectorisation
@@ -181,16 +213,14 @@ Heatmap(vartrix_snps_sim,cluster_rows=FALSE,cluster_columns=FALSE)
 
 ## Matrix multiplication
 
-|   | 1 | 0 |
-|---|---|---|
-| 1 | a | b |
-| 0 | c | d |
+|     | 1   | 0   |
+|-----|-----|-----|
+| 1   | a   | b   |
+| 0   | c   | d   |
 
 j=a/(a+b+c)
 
-a= mat x t(mat)
-b= (1-mat) x t(mat)
-c= mat x t(1-mat)
+a= mat x t(mat) b= (1-mat) x t(mat) c= mat x t(1-mat)
 
 But this set up neglects missing data.
 
