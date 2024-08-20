@@ -14,6 +14,7 @@ format:
 author: "Michael Lynch"
 from: markdown+emoji
 engine: knitr
+editor: source
 ---
 
 {{< include ./_extensions/r-wasm/live/_knitr.qmd >}}
@@ -53,13 +54,13 @@ print("here's some random r code")
 ```
 
 Python:
-
+````
 ```{python echo=TRUE}
 
 print('Hello, world!')
 
 ```
-
+````
 And some good ol' bash because why not?
 
 ````{bash echo=TRUE}
@@ -117,12 +118,28 @@ cat('Quarto-live uses webR for interactive R')
 ```
 
 
-```{pyodide}
+```{pyodide include=FALSE}
 for x in range(3):
   print(x ** 2)
 
 print('Quarto-live uses pyodide for interactive python')
 ```
+
+
+## How about some interactive plots?
+
+````{r}
+#| fig-height: 8
+#| fig-width: 20
+library(plotly)
+fig <- plot_ly(z = volcano, type = "heatmap")
+
+fig
+
+````
+
+
+
 
 # Algorithm complexity, benchmarking and vectorisation
 
@@ -174,7 +191,7 @@ Loops get a bad rep in R for a couple of reasons.
 
 ```{r}
 #| echo: true
-#| 
+
 n=100
 x=1:n
 
@@ -214,16 +231,22 @@ grid.arrange(ggline(df,x='n',y=c('vec')),ggline(df,x='n',y=c('loop')),ncol=2)
 
 -   We will try to leverage useful properties of binary data to classify SNPs
 
-```{r}
 
+-   Numerical output buttttt not really. No real reason 0 should be considreed closer to 1 than 3. Just a way to code it.
+
+## SNPs heatmap
+
+```{r}
+#| fig-height: 10
+#| fig-width: 20
+
+  
 vartrix_snps_sim<-matrix(sample(c(0,1,2,3),40,replace=TRUE),ncol=4)
 head(vartrix_snps_sim)
 
 library(ComplexHeatmap)
 Heatmap(vartrix_snps_sim,cluster_rows=FALSE,cluster_columns=FALSE)
 ```
-
--   Numerical output buttttt not really. No real reason 0 should be considreed closer to 1 than 3. Just a way to code it.
 
 ## Step 1: Binarise the matrix
 
@@ -260,4 +283,17 @@ We extend this by multiplying each side of the equation (element wise) by an add
 
 ## Quarto + presentations
 
+- reproducible (thumbs up)
+- allows code highlighting, interactive plots, 
+- great tool for teaching/workshops
+
+- still some teething issues in formatting/aesthetics
+- learning curve
+
 ## Development
+
+
+- Benchmark, start with small units/bottlenecks
+- think about how the code will need to scale, now and in the future
+- revise your math :)
+
