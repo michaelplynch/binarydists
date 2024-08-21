@@ -1,0 +1,37 @@
+---
+title: "test slides"
+format:
+    live-revealjs
+author: "Michael Lynch"
+from: markdown+emoji
+engine: knitr
+editor: source
+---
+
+{{< include ./_extensions/r-wasm/live/_knitr.qmd >}}
+
+## Python interactive
+
+````{pyodide include=FALSE}
+
+num = 8 
+num_sqrt = num ** 0.5
+num_sqrt
+````
+
+````{r}
+
+print('r code')
+
+````
+
+## How about some interactive plots?
+
+```{r}
+library(leaflet)
+leaflet() %>%
+  addTiles() %>%  # Add default OpenStreetMap map tiles
+  addMarkers(lng=174.768, lat=-36.852, popup="The birthplace of R")
+```
+
+

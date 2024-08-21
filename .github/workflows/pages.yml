@@ -29,6 +29,7 @@ jobs:
             any::tictoc
             any::ComplexHeatmap
             any::reticulate
+            any::plotly
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
       - run: |
