@@ -6,7 +6,7 @@ format:
         show-slide-number: speaker
         chalkboard: true
         code-line-numbers: true
-        preview-links: auto
+        preview-links: true
         width: 1350
         height: 700
         logo: assets/images/UL_logo.jpg
@@ -41,7 +41,7 @@ Can be hosted on Github pages (see source code)
 
 More info [here](https://quarto.org/docs/presentations/revealjs/#footer-logo)
 
-## Code and output can be rendered similar to .Rmd/.Qmd docs
+## Code and output can be rendered similar to .Rmd/.Qmd docs {.scrollable}
 
 - Any language compatible was code chunks in RStudio can be used
 
@@ -54,13 +54,13 @@ print("here's some random r code")
 ```
 
 Python:
-````
+
 ```{python echo=TRUE}
 
 print('Hello, world!')
 
 ```
-````
+
 And some good ol' bash because why not?
 
 ````{bash echo=TRUE}
@@ -72,7 +72,7 @@ whoami
 
 ## Line highlighting draw attention to specific parts of code. (sort of)
 
-IMO opinion this aspect still lacks finesse (or else I just haven't figured it out yet)
+IMO this aspect still lacks finesse (or else I just haven't figured it out yet, very possible)
 
 ````{r}
 #| echo: true
@@ -234,37 +234,36 @@ grid.arrange(ggline(df,x='n',y=c('vec')),ggline(df,x='n',y=c('loop')),ncol=2)
 
 -   Numerical output buttttt not really. No real reason 0 should be considreed closer to 1 than 3. Just a way to code it.
 
-## SNPs heatmap
+## SNPs simulated heatmap {.scrollable}
 
 ```{r}
-#| fig-height: 10
-#| fig-width: 20
+#| fig-height: 5
+#| fig-width: 10
 
-  
-vartrix_snps_sim<-matrix(sample(c(0,1,2,3),40,replace=TRUE),ncol=4)
+set.seed(1)
+vartrix_snps_sim<-matrix(sample(c(0,1,2,3),20,replace=TRUE),ncol=2)
 head(vartrix_snps_sim)
 
+snps2<-vartrix_snps_sim
+snps2[snps2 %in% c(1,0)]<-0
+snps2[snps2 %in% c(2,3)]<-1
+mode(vartrix_snps_sim)<-'character'
+
+snps3<-snps2
+snps3[vartrix_snps_sim==0]<-NA
 library(ComplexHeatmap)
-Heatmap(vartrix_snps_sim,cluster_rows=FALSE,cluster_columns=FALSE)
+Heatmap(vartrix_snps_sim,cluster_rows=FALSE,cluster_columns=FALSE,column_title = 'cells',row_title = 'SNPs')
+Heatmap(snps2,cluster_rows = FALSE,cluster_columns = FALSE,column_title = 'cells',row_title = 'SNPs')
+
+table(snps2[,1],snps2[,2])
+
+Heatmap(snps3,cluster_rows = FALSE,cluster_columns = FALSE,column_title = 'cells',row_title = 'SNPs')
+
+table(snps3[,1],snps3[,2])
 ```
 
-## Step 1: Binarise the matrix
+## Binary distance measures {.scrollable}
 
-2&3 can be considered merged. So we're not down to 'trinary' data. We can also (sort of ) merge 0,1 i.e. the SNP isn't in the data (0 becuase of no read, 1 SNP is in ref not alt)
-
-```{r}
-
-
-
-```
-
-```{r}
-
-
-
-```
-
-## Matrix multiplication
 
 |     | 1   | 0   |
 |-----|-----|-----|
@@ -273,11 +272,71 @@ Heatmap(vartrix_snps_sim,cluster_rows=FALSE,cluster_columns=FALSE)
 
 j=a/(a+b+c)
 
-a= mat x t(mat) b= (1-mat) x t(mat) c= mat x t(1-mat)
+````{webr}
+
+library(ade4)
+?dist.binary
+
+````
+
+
+## Matrix multiplication (product)
+
+[matrix multiplication wiki](https://en.wikipedia.org/wiki/Matrix_multiplication)
+
+[matrix multiplicataion worked example khan academy](https://www.khanacademy.org/math/linear-algebra/matrix-transformations/composition-of-transformations/v/linear-algebra-matrix-product-examples)
+
+a= m x t(m) 
+
+b= (1-m) x t(m) 
+
+c= m x t(1-m)
 
 But this set up neglects missing data.
-
 We extend this by multiplying each side of the equation (element wise) by an additional matrix such that 0=no read, 1= SNP in alt, ref, or both
+
+## New implementation {.scrollable}
+
+
+Create a second matrix to show missing data:
+
+````{r}
+
+snps4<-vartrix_snps_sim>0
+
+
+Heatmap(snps3,cluster_rows=FALSE,cluster_columns = FALSE,column_title = 'cells',row_title = 'SNPs')
+
+cat('goes to >>>')
+Heatmap(snps4*1,cluster_rows = FALSE ,cluster_columns = FALSE,column_title = 'cells',row_title = 'SNPs')
+````
+
+## Let's revisit our distance matrix calc
+
+where m is snp absent/present and p is read absent/present.
+
+a = 1,1 = m x t(m) -> mp x t(mp)
+
+b = 0,1 = (1-m) x t(m) -> (1-mp) x t(mp)
+
+c = 1,0 = m x t(1-m) -> mp x t(1-mp)
+
+## What do we see in practice?
+
+No SNPs in common -> 0/0 -> NA (this is fine, we can just set these to distance=1 so they don't get included.)
+ 
+But, with few SNPs in common, 0/1 or 0/2 etc. distances occur, but often not legit and impact nearest neighbour classification.
+
+- Ideally we want to classify based on cells with most overlap.
+- Could set a threshold but this may be arbitrary and dataset dependent (e.g. only look at cells with at least 50 SNPs overlap for classifying)
+
+Solution?
+
+Infer 'centroid' of each singlet, doublet cluster so information is shared across training data.
+
+Perform nearest centroid type classification.
+
+
 
 # Take-home messages
 

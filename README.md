@@ -15,6 +15,6 @@ This presentation has two aims:
 
 - Algorithm complexity, benchmarking tools and vectorisation
 - The problem with missing data
-- 
+- Updated jaccard measure
 
 Slides are rendered through Github Actions and are available [here](https://michaelplynch.github.io/binarydists/#/title-slide).
