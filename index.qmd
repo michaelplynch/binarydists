@@ -108,8 +108,6 @@ Maybe there's a better way to use one chunk per output instead...
 Runs in the browser through [WebAssembly](https://webassembly.org/) and [Quarto-live](https://r-wasm.github.io/quarto-live/)
 
 ```{webr}
-#| echo: true
-#| output-location: column
 # test some of you own code here :) 
 
 cat('You can write some of your own code, and reset if needed.\nOther functionality can be used for creating grading for teaching.')
